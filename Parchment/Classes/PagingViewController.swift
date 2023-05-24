@@ -18,6 +18,12 @@ open class PagingViewController:
     PageViewControllerDelegate {
     // MARK: Public Properties
 
+    /// Whether to enable the function of classification nesting and paging. _Default: false
+    public var isCategoryNestPagingEnabled: Bool {
+        get { return options.isCategoryNestPagingEnabled }
+        set { options.isCategoryNestPagingEnabled = newValue }
+    }
+
     /// The size for each of the menu items. _Default:
     /// .sizeToFit(minWidth: 150, height: 40)_
     public var menuItemSize: PagingMenuItemSize {
@@ -266,7 +272,7 @@ open class PagingViewController:
 
     /// An instance that stores all the customization so that it's
     /// easier to share between other classes.
-    public internal(set) var options: PagingOptions {
+    public var options: PagingOptions {
         didSet {
             if options.menuLayoutClass != oldValue.menuLayoutClass {
                 let layout = createLayout(layout: options.menuLayoutClass.self)
@@ -280,6 +286,7 @@ open class PagingViewController:
             pageViewController.options = options
             pagingController.options = options
             pagingView.options = options
+            (collectionView as? PagingMenuCollectionView)?.isCategoryNestPagingEnabled = options.isCategoryNestPagingEnabled
         }
     }
 
@@ -315,7 +322,34 @@ open class PagingViewController:
         pagingController = PagingController(options: options)
         pageViewController = PageViewController(options: options)
         collectionViewLayout = createLayout(layout: options.menuLayoutClass.self)
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView = PagingMenuCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        super.init(nibName: nil, bundle: nil)
+        collectionView.delegate = self
+        collectionViewLayout.options = options
+        configurePagingController()
+
+        // Register default cell
+        register(PagingTitleCell.self, for: PagingIndexItem.self)
+    }
+
+    /// Creates an instance of `PagingViewController`. You need to call
+    /// `select(pagingItem:animated:)` in order to set the initial view
+    /// controller before any items become visible.
+    ///
+    /// - Parameters:
+    ///   - options: An object with configuration options. These
+    ///   - collectionView: An custom collectionView for menuView
+    /// parameters are also available directly on `PagingViewController`.
+    public init(
+        options: PagingOptions = PagingOptions(),
+        collectionView: UICollectionView
+    ) {
+        self.options = options
+        pagingController = PagingController(options: options)
+        pageViewController = PageViewController(options: options)
+        collectionViewLayout = createLayout(layout: options.menuLayoutClass.self)
+        self.collectionView = collectionView
+        collectionView.setCollectionViewLayout(collectionViewLayout, animated: false)
         super.init(nibName: nil, bundle: nil)
         collectionView.delegate = self
         collectionViewLayout.options = options
@@ -350,7 +384,7 @@ open class PagingViewController:
         pagingController = PagingController(options: options)
         pageViewController = PageViewController(options: options)
         collectionViewLayout = createLayout(layout: options.menuLayoutClass.self)
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView = PagingMenuCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         super.init(coder: coder)
         collectionView.delegate = self
         configurePagingController()
@@ -469,6 +503,14 @@ open class PagingViewController:
         }
     }
 
+    public func viewAppeared() {
+        pagingController.viewAppeared()
+    }
+
+    public func transitionSize() {
+        pagingController.transitionSize()
+    }
+
     open override func loadView() {
         view = PagingView(
             options: options,
@@ -487,6 +529,12 @@ open class PagingViewController:
         pageViewController.delegate = self
         pageViewController.dataSource = self
         configureContentInteraction()
+        
+        // Fix Selected
+        pagingView.superviewOrWindowChange = { [weak self] in
+            guard let self = self, self.pagingController.toFixSelectedWhenSuperviewOrWindowIsNil else { return }
+            self.pagingController.viewAppeared()
+        }
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -545,6 +593,7 @@ open class PagingViewController:
         pagingController.dataSource = self
         pagingController.delegate = self
         pagingController.options = options
+        (collectionView as? PagingMenuCollectionView)?.isCategoryNestPagingEnabled = options.isCategoryNestPagingEnabled
     }
 
     private func itemsForFiniteDataSource() -> [PagingItem] {

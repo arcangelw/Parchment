@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		336BEE2E2BA7D571008EE723 /* PagingMenuCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336BEE2D2BA7D571008EE723 /* PagingMenuCollectionView.swift */; };
+		33D7F8BF2B99B72500C29D81 /* PagingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D7F8BE2B99B72500C29D81 /* PagingScrollView.swift */; };
 		3E2AAD201CA81EA20044AAA5 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2AAD1F1CA81EA20044AAA5 /* ContentViewController.swift */; };
 		3E2AAD281CA831AB0044AAA5 /* UIView+constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2AAD271CA831AB0044AAA5 /* UIView+constraints.swift */; };
 		3E2AAD2C1CA869B50044AAA5 /* PagingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2AAD2B1CA869B50044AAA5 /* PagingItem.swift */; };
@@ -221,6 +223,8 @@
 
 /* Begin PBXFileReference section */
 		183AA9F1235B7742003A6408 /* MultipleCellsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleCellsViewController.swift; sourceTree = "<group>"; };
+		336BEE2D2BA7D571008EE723 /* PagingMenuCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingMenuCollectionView.swift; sourceTree = "<group>"; };
+		33D7F8BE2B99B72500C29D81 /* PagingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagingScrollView.swift; sourceTree = "<group>"; };
 		3E2AAD091CA81D490044AAA5 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		3E2AAD1F1CA81EA20044AAA5 /* ContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 		3E2AAD231CA823DA0044AAA5 /* CalendarPagingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarPagingCell.swift; sourceTree = "<group>"; };
@@ -486,6 +490,8 @@
 				3E562ACD1CE7CD8C007623B3 /* PagingTitleCell.swift */,
 				3E49C7231C8F5C13006269DD /* PagingView.swift */,
 				3E49C7241C8F5C13006269DD /* PagingViewController.swift */,
+				33D7F8BE2B99B72500C29D81 /* PagingScrollView.swift */,
+				336BEE2D2BA7D571008EE723 /* PagingMenuCollectionView.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1097,6 +1103,7 @@
 				95A84B0520E586FA0031520F /* PagingStaticDataSource.swift in Sources */,
 				9530E25329DEC2E5004FC88C /* PageContentConfiguration.swift in Sources */,
 				3E49C7251C8F5C13006269DD /* PagingBorderView.swift in Sources */,
+				33D7F8BF2B99B72500C29D81 /* PagingScrollView.swift in Sources */,
 				E8CB720A23D70E1400A9B089 /* PagingMenuPosition.swift in Sources */,
 				95E4BA721FF15EFE008871A3 /* PagingFiniteDataSource.swift in Sources */,
 				3E40909A1C88BCC900800E22 /* PagingDirection.swift in Sources */,
@@ -1123,6 +1130,7 @@
 				3E4090AE1C88BDD100800E22 /* PagingBorderLayoutAttributes.swift in Sources */,
 				955444B11FC99E2C001EC26B /* PagingSizeCache.swift in Sources */,
 				3E4283FC1C99CF9000032D95 /* PagingItems.swift in Sources */,
+				336BEE2E2BA7D571008EE723 /* PagingMenuCollectionView.swift in Sources */,
 				3E49C7281C8F5C13006269DD /* PagingIndicatorView.swift in Sources */,
 				95D2AE36242BB22F00AC3D46 /* PageViewDirection.swift in Sources */,
 				95B301171E59FCD500B95D02 /* UIEdgeInsets.swift in Sources */,

@@ -12,7 +12,7 @@ open class PagingView: UIView {
 
     public let collectionView: UICollectionView
     public let pageView: UIView
-    public var options: PagingOptions {
+    open var options: PagingOptions {
         didSet {
             heightConstraint?.constant = options.menuHeight
             collectionView.backgroundColor = options.menuBackgroundColor
@@ -22,6 +22,10 @@ open class PagingView: UIView {
     // MARK: Private Properties
 
     private var heightConstraint: NSLayoutConstraint?
+
+    // MARK: Internal Properties
+
+    internal var superviewOrWindowChange: (() -> Void)?
 
     // MARK: Initializers
 
@@ -38,6 +42,20 @@ open class PagingView: UIView {
 
     public required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if superview != nil {
+            superviewOrWindowChange?()
+        }
+    }
+
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil{
+            superviewOrWindowChange?()
+        }
     }
 
     // MARK: Public Methods
@@ -59,8 +77,8 @@ open class PagingView: UIView {
         pageView.translatesAutoresizingMaskIntoConstraints = false
 
         let heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: options.menuHeight)
-        heightConstraint.isActive = true
         heightConstraint.priority = .defaultHigh
+        heightConstraint.isActive = true
         self.heightConstraint = heightConstraint
 
         NSLayoutConstraint.activate([
