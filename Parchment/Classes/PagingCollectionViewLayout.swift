@@ -211,7 +211,7 @@ open class PagingCollectionViewLayout: UICollectionViewLayout, PagingLayout {
             at: IndexPath(item: 1, section: 0)
         )
 
-        if let indicatorAttributes = indicatorAttributes {
+        if !layoutAttributes.isEmpty, let indicatorAttributes = indicatorAttributes {
             layoutAttributes.append(indicatorAttributes)
         }
 
@@ -345,7 +345,21 @@ open class PagingCollectionViewLayout: UICollectionViewLayout, PagingLayout {
                     for attributes in layoutAttributes.values {
                         attributes.frame = attributes.frame.offsetBy(dx: offset, dy: 0)
                     }
-                    
+                case .spaceBetween:
+                    // The items are evenly distributed within the alignment container along the main axis.
+                    // The spacing between each pair of adjacent items is the same.
+                    // The first item is flush with the main-start edge, and the last item is flush with the main-end edge.
+                    spaceLayoutAttributes(Array(layoutAttributes.values), spaceCount: layoutAttributes.count - 1, leftSpaceFraction: 0)
+                case .spaceAround:
+                    // The items are evenly distributed within the alignment container along the main axis.
+                    // The spacing between each pair of adjacent items is the same.
+                    // The empty space before the first and after the last item equals half of the space between each pair of adjacent items.
+                    spaceLayoutAttributes(Array(layoutAttributes.values), spaceCount: layoutAttributes.count, leftSpaceFraction: 0.5)
+                case .spaceEvenly:
+                    // The items are evenly distributed within the alignment container along the main axis.
+                    // The spacing between each pair of adjacent items, the main-start edge and the first item,
+                    // and the main-end edge and the last item, are all exactly the same.
+                    spaceLayoutAttributes(Array(layoutAttributes.values), spaceCount: layoutAttributes.count + 1, leftSpaceFraction: 1)
                 default:
                     break
                 }
@@ -385,6 +399,16 @@ open class PagingCollectionViewLayout: UICollectionViewLayout, PagingLayout {
         }
 
         self.layoutAttributes = layoutAttributes
+    }
+
+    private func spaceLayoutAttributes(_ layoutAttributes: [UICollectionViewLayoutAttributes], spaceCount: Int, leftSpaceFraction: CGFloat) {
+        guard !layoutAttributes.isEmpty else { return }
+        let space = floor((view.bounds.width - adjustedMenuInsets.horizontal - layoutAttributes.map(\.frame.width).reduce(0, +)) / CGFloat(max(1, spaceCount)))
+        var left = adjustedMenuInsets.left + space * leftSpaceFraction
+        for layoutAttribute in layoutAttributes.sorted(by: { $0.indexPath < $1.indexPath }) {
+            layoutAttribute.frame.origin.x = left
+            left = layoutAttribute.frame.maxX + space
+        }
     }
 
     private func createDecorationLayoutAttributes() {

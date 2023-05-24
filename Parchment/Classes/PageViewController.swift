@@ -33,7 +33,8 @@ public final class PageViewController: UIViewController {
     /// added. Changing the properties on this scroll view might cause
     /// undefined behavior.
     public private(set) lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
+        let scrollView = PagingScrollView()
+        scrollView.isCategoryNestPagingEnabled = self.options.isCategoryNestPagingEnabled
         scrollView.isPagingEnabled = true
         scrollView.scrollsToTop = false
         scrollView.bounces = true
@@ -45,6 +46,7 @@ public final class PageViewController: UIViewController {
 
     public var options: PagingOptions {
         didSet {
+            (scrollView as! PagingScrollView).isCategoryNestPagingEnabled = options.isCategoryNestPagingEnabled
             switch options.contentNavigationOrientation {
             case .vertical:
                 scrollView.alwaysBounceHorizontal = false

@@ -29,6 +29,8 @@ final class PagingController: NSObject {
         }
     }
 
+    var toFixSelectedWhenSuperviewOrWindowIsNil = false
+
     private(set) var state: PagingState {
         didSet {
             collectionViewLayout.state = state
@@ -67,9 +69,13 @@ final class PagingController: NSObject {
     func select(pagingItem: PagingItem, animated: Bool) {
         if collectionView.superview == nil || collectionView.window == nil {
             state = .selected(pagingItem: pagingItem)
+            toFixSelectedWhenSuperviewOrWindowIsNil = true
             return
         }
-
+        if toFixSelectedWhenSuperviewOrWindowIsNil {
+            state = .empty
+            toFixSelectedWhenSuperviewOrWindowIsNil = false
+        }
         switch state {
         case .empty:
             state = .selected(pagingItem: pagingItem)
@@ -252,6 +258,7 @@ final class PagingController: NSObject {
     func viewAppeared() {
         switch state {
         case let .selected(pagingItem), let .scrolling(_, pagingItem?, _, _, _):
+            toFixSelectedWhenSuperviewOrWindowIsNil = false
             state = .selected(pagingItem: pagingItem)
             reloadItems(around: pagingItem)
 
@@ -703,6 +710,7 @@ extension PagingController: UICollectionViewDataSource {
             withReuseIdentifier: reuseIdentifier,
             for: indexPath
         ) as! PagingCell
+        cell.collectionView = collectionView
         var selected: Bool = false
         if let currentPagingItem = state.currentPagingItem {
             selected = currentPagingItem.isEqual(to: pagingItem)

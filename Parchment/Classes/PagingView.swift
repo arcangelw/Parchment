@@ -12,16 +12,19 @@ open class PagingView: UIView {
 
     public let collectionView: UICollectionView
     public let pageView: UIView
-    public var options: PagingOptions {
+    open var options: PagingOptions {
         didSet {
-            heightConstraint?.constant = options.menuHeight
-            collectionView.backgroundColor = options.menuBackgroundColor
+            updateOptions()
         }
     }
 
     // MARK: Private Properties
 
     private var heightConstraint: NSLayoutConstraint?
+
+    // MARK: Internal Properties
+
+    internal var superviewOrWindowChange: (() -> Void)?
 
     // MARK: Initializers
 
@@ -34,18 +37,40 @@ open class PagingView: UIView {
         self.collectionView = collectionView
         self.pageView = pageView
         super.init(frame: .zero)
+        updateOptions()
     }
 
     public required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if superview != nil {
+            superviewOrWindowChange?()
+        }
+    }
+
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil{
+            superviewOrWindowChange?()
+        }
+    }
+
     // MARK: Public Methods
+
+    /// update `PagingOptions`
+    /// Override this if you need any custom behavior.
+    open func updateOptions() {
+        heightConstraint?.constant = options.menuHeight
+        collectionView.backgroundColor = options.menuBackgroundColor
+    }
+
     /// Configures the view hierarchy, sets up the layout constraints
     /// and does any other customization based on the `PagingOptions`.
     /// Override this if you need any custom behavior.
     open func configure() {
-        collectionView.backgroundColor = options.menuBackgroundColor
         addSubview(pageView)
         addSubview(collectionView)
         setupConstraints()
@@ -58,8 +83,8 @@ open class PagingView: UIView {
         pageView.translatesAutoresizingMaskIntoConstraints = false
 
         let heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: options.menuHeight)
-        heightConstraint.isActive = true
         heightConstraint.priority = .defaultHigh
+        heightConstraint.isActive = true
         self.heightConstraint = heightConstraint
 
         NSLayoutConstraint.activate([

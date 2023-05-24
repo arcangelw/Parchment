@@ -286,7 +286,7 @@ final class PageViewManager {
         let newPreviousViewController = dataSource?.viewControllerBefore(viewController)
         let newNextViewController = dataSource?.viewControllerAfter(viewController)
 
-        if let oldSelectedViewController = oldSelectedViewController {
+        if let oldSelectedViewController = oldSelectedViewController, viewController !== oldSelectedViewController {
             beginAppearanceTransition(false, for: oldSelectedViewController, animated: animated)
         }
 
@@ -302,8 +302,9 @@ final class PageViewManager {
             }
         }
 
-        if let oldSelectedViewController = selectedViewController {
-            if oldSelectedViewController !== newPreviousViewController,
+        if let oldSelectedViewController = oldSelectedViewController {
+            if oldSelectedViewController !== viewController,
+                oldSelectedViewController !== newPreviousViewController,
                 oldSelectedViewController !== newNextViewController {
                 delegate?.removeViewController(oldSelectedViewController)
             }
@@ -325,7 +326,8 @@ final class PageViewManager {
             }
         }
 
-        if viewController !== nextViewController,
+        if viewController !== selectedViewController,
+            viewController !== nextViewController,
             viewController !== previousViewController {
             delegate?.addViewController(viewController)
         }
@@ -344,7 +346,7 @@ final class PageViewManager {
 
         layoutsViews()
 
-        if let oldSelectedViewController = oldSelectedViewController {
+        if let oldSelectedViewController = oldSelectedViewController, viewController !== oldSelectedViewController {
             endAppearanceTransition(for: oldSelectedViewController)
         }
 
