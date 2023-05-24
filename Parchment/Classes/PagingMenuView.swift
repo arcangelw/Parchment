@@ -204,12 +204,12 @@ open class PagingMenuView: UIView {
     /// cells that display pretty much anything. By default, scrolling
     /// is enabled in the collection view.
     public lazy var collectionView: UICollectionView = {
-        UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        PagingMenuCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
     }()
 
     /// An instance that stores all the customization so that it's
     /// easier to share between other classes.
-    public private(set) var options = PagingOptions() {
+    public private(set) var options: PagingOptions {
         didSet {
             if options.menuLayoutClass != oldValue.menuLayoutClass {
                 let layout = createLayout(layout: options.menuLayoutClass.self)
@@ -219,8 +219,9 @@ open class PagingMenuView: UIView {
             } else {
                 collectionViewLayout.options = options
             }
-
+            collectionView.backgroundColor = options.menuBackgroundColor
             pagingController.options = options
+            (collectionView as? PagingMenuCollectionView)?.isCategoryNestPagingEnabled = options.isCategoryNestPagingEnabled
         }
     }
 
@@ -234,13 +235,37 @@ open class PagingMenuView: UIView {
     /// `select(pagingItem:animated:)` in order to set the initial view
     /// controller before any items become visible.
     public override init(frame: CGRect) {
+        options = PagingOptions()
         super.init(frame: frame)
         configure()
     }
 
+    public init(options: PagingOptions) {
+        self.options = options
+        super.init(frame: .zero)
+        configure()
+    }
+
     public required init?(coder: NSCoder) {
+        options = PagingOptions()
         super.init(coder: coder)
         configure()
+    }
+
+    // MARK: Fix Selected
+
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if superview != nil, pagingController.toFixSelectedWhenSuperviewOrWindowIsNil {
+            pagingController.viewAppeared()
+        }
+    }
+
+    open override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil, pagingController.toFixSelectedWhenSuperviewOrWindowIsNil {
+            pagingController.viewAppeared()
+        }
     }
 
     // TODO: Figure out how we can remove this method.
@@ -258,6 +283,14 @@ open class PagingMenuView: UIView {
 
     open func contentFinishedScrolling() {
         pagingController.contentFinishedScrolling()
+    }
+
+    open func reloadData(around pagingItem: PagingItem) {
+        pagingController.reloadData(around: pagingItem)
+    }
+
+    open func removeAll() {
+        pagingController.removeAll()
     }
 
     /// Reload data around given paging item. This will set the given
@@ -296,11 +329,11 @@ open class PagingMenuView: UIView {
 }
 
 extension PagingMenuView: UICollectionViewDelegate {
-    public func scrollViewDidScroll(_: UIScrollView) {
+    open func scrollViewDidScroll(_: UIScrollView) {
         pagingController.menuScrolled()
     }
 
-    public func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    open func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         pagingController.select(indexPath: indexPath, animated: true)
     }
 }

@@ -1,6 +1,10 @@
 import UIKit
 
 public struct PagingOptions {
+    
+    /// Whether to enable the function of classification nesting and paging. _Default: false
+    public var isCategoryNestPagingEnabled: Bool
+
     /// The size for each of the menu items. _Default:
     /// .sizeToFit(minWidth: 150, height: 40)_
     public var menuItemSize: PagingMenuItemSize
@@ -133,6 +137,7 @@ public struct PagingOptions {
     }
 
     public init() {
+        isCategoryNestPagingEnabled = false
         selectedScrollPosition = .preferCentered
         menuItemSize = .sizeToFit(minWidth: 150, height: 40)
         menuPosition = .top
